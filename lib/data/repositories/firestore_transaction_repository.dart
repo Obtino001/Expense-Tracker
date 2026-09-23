@@ -12,10 +12,12 @@ import '../models/transaction_model.dart';
 /// operates on that user's data — security rules enforce it server-side.
 class FirestoreTransactionRepository {
   FirestoreTransactionRepository({required this.uid, FirebaseFirestore? db})
-      : _db = db ?? FirebaseFirestore.instance;
+      : _customDb = db;
 
-  final FirebaseFirestore _db;
+  final FirebaseFirestore? _customDb;
   final String uid;
+
+  FirebaseFirestore get _db => _customDb ?? FirebaseFirestore.instance;
 
   // ---------- Collection refs (typed via withConverter) ----------
 

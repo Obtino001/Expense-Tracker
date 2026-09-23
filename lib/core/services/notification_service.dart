@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,7 +17,15 @@ class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  FirebaseMessaging? get _fcm {
+    if (kIsWeb) return null;
+    try {
+      return Firebase.apps.isNotEmpty ? FirebaseMessaging.instance : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   final FlutterLocalNotificationsPlugin _local =
       FlutterLocalNotificationsPlugin();
 
@@ -29,6 +36,7 @@ class NotificationService {
 
   /// Call once during app start (in `main`).
   Future<void> init() async {
+    if (kIsWeb) return;
     if (_initialized) return;
     _initialized = true;
 
@@ -54,13 +62,16 @@ class NotificationService {
     );
 
     // ---- FCM listeners ----
-    FirebaseMessaging.onMessage.listen(_onForegroundMessage);
+    if (_fcm != null) {
+      FirebaseMessaging.onMessage.listen(_onForegroundMessage);
+    }
   }
 
   /// Prompt permission and return whether the user granted it.
   /// Call this AFTER sign-in so the prompt has a context.
   Future<bool> requestPermission() async {
-    final NotificationSettings s = await _fcm.requestPermission(
+    if (kIsWeb || _fcm == null) return false;
+    final NotificationSettings s = await _fcm!.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -72,15 +83,18 @@ class NotificationService {
   /// Returns the device's FCM token. Persist this in Firestore so Cloud
   /// Functions can target this user.
   Future<String?> getToken() async {
+    if (kIsWeb || _fcm == null) return null;
     // APNs token must be available on iOS before requesting an FCM token.
-    if (Platform.isIOS || Platform.isMacOS) {
-      await _fcm.getAPNSToken();
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      await _fcm!.getAPNSToken();
     }
-    return _fcm.getToken();
+    return _fcm!.getToken();
   }
 
   /// Listens for token rotation events (rare but real).
-  Stream<String> onTokenRefresh() => _fcm.onTokenRefresh;
+  Stream<String> onTokenRefresh() =>
+      _fcm != null ? _fcm!.onTokenRefresh : const Stream<String>.empty();
 
   /// Display a foreground push as a local heads-up notification.
   Future<void> _onForegroundMessage(RemoteMessage message) async {

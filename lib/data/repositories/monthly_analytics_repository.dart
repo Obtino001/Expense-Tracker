@@ -8,10 +8,12 @@ import '../models/transaction_model.dart';
 /// from the raw transactions stream.
 class MonthlyAnalyticsRepository {
   MonthlyAnalyticsRepository({required this.uid, FirebaseFirestore? db})
-      : _db = db ?? FirebaseFirestore.instance;
+      : _customDb = db;
 
-  final FirebaseFirestore _db;
+  final FirebaseFirestore? _customDb;
   final String uid;
+
+  FirebaseFirestore get _db => _customDb ?? FirebaseFirestore.instance;
 
   static String _key(int year, int month) =>
       '$year-${month.toString().padLeft(2, '0')}';

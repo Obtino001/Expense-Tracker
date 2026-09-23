@@ -7,10 +7,10 @@ import '../models/user_model.dart';
 
 /// Manages the `users/{uid}` profile document and `users/{uid}/notifications/*`.
 class FirestoreUserRepository {
-  FirestoreUserRepository({FirebaseFirestore? db})
-      : _db = db ?? FirebaseFirestore.instance;
+  FirestoreUserRepository({FirebaseFirestore? db}) : _customDb = db;
 
-  final FirebaseFirestore _db;
+  final FirebaseFirestore? _customDb;
+  FirebaseFirestore get _db => _customDb ?? FirebaseFirestore.instance;
 
   // ---------- Profile ----------
 

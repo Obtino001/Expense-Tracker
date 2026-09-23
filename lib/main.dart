@@ -17,61 +17,72 @@ import 'firebase_options.dart';
 /// Triggered when the app is fully terminated and a push arrives.
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Initialize Firebase here — the isolate is fresh.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  // No UI work here; the OS shows the notification.
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (_) {}
 }
 
-Future<void> main() async {
-  // `runZonedGuarded` lets Crashlytics catch async errors that escape Flutter.
-  await runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
 
-    // ---- System UI ----
-    await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-      ),
-    );
-
-    // ---- Firebase (Safe initialization for web / demo mode) ----
+  // ---- System UI ----
+  if (!kIsWeb) {
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
+      SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+        ),
       );
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
-      PlatformDispatcher.instance.onError = (Object e, StackTrace s) {
-        FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
-        return true;
-      };
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
-      await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+    } catch (e) {
+      debugPrint('System UI init failed: $e');
+    }
+  }
+
+  // Initialize optional platform services asynchronously without blocking runApp
+  _initServices();
+
+  runApp(const ProviderScope(child: BudgetApp()));
+}
+
+Future<void> _initServices() async {
+  final FirebaseOptions options = DefaultFirebaseOptions.currentPlatform;
+  final bool isPlaceholder = options.apiKey.startsWith('REPLACE_ME');
+
+  if (!isPlaceholder) {
+    try {
+      await Firebase.initializeApp(options: options);
       if (!kIsWeb) {
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError = (Object e, StackTrace s) {
+          FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
+          return true;
+        };
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(!kDebugMode);
+        await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
         FirebaseMessaging.onBackgroundMessage(
             _firebaseMessagingBackgroundHandler);
       }
     } catch (e) {
-      debugPrint('Firebase initialized in fallback/demo mode: $e');
+      debugPrint('Firebase init error: $e');
     }
+  } else {
+    debugPrint('Running in demo mode with local mock storage (Firebase placeholder keys detected).');
+  }
 
-    // Init local notifications channel
+  if (!kIsWeb) {
     try {
       await NotificationService.instance.init();
     } catch (e) {
       debugPrint('NotificationService init in fallback: $e');
     }
-
-    runApp(const ProviderScope(child: BudgetApp()));
-  }, (Object e, StackTrace s) {
-    FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
-  });
+  }
 }
