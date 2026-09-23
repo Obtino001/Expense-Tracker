@@ -6,16 +6,16 @@ class AppColors {
   AppColors._();
 
   // ---------- Brand ----------
-  static const Color primary = Color(0xFFFF5B4D); // Picky coral accent
-  static const Color primaryDark = Color(0xFFE2483B);
-  static const Color secondary = Color(0xFF2F80ED); // Vibrant blue
+  static const Color primary = Color(0xFF227A67);
+  static const Color primaryDark = Color(0xFF175A4D);
+  static const Color secondary = Color(0xFFBDEBD8);
   static const Color accent = Color(0xFFF59E0B); // Amber
 
   // Picky specific colors
-  static const Color coral = Color(0xFFFF5B4D);
-  static const Color coralSoft = Color(0xFFFFF0ED);
-  static const Color coralMuted = Color(0xFFFFE5E0);
-  static const Color deepBlack = Color(0xFF0F0F12);
+  static const Color coral = primary;
+  static const Color coralSoft = Color(0xFFEDF6F1);
+  static const Color coralMuted = Color(0xFFD8EEE3);
+  static const Color deepBlack = Color(0xFF152A26);
   static const Color darkCardSurface = Color(0xFF1C1C22);
   static const Color darkPill = Color(0xFF24242C);
   static const Color darkPillBorder = Color(0xFF32323C);
@@ -29,39 +29,39 @@ class AppColors {
   static const Color catEntertainment = Color(0xFFEC4899); // Soft magenta
 
   // ---------- Semantic ----------
-  static const Color success = Color(0xFF10B981);
+  static const Color success = Color(0xFF279578);
   static const Color successSoft = Color(0xFFE8F7EE);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color danger = Color(0xFFFF5B4D);
+  static const Color danger = Color(0xFFD96161);
   static const Color info = Color(0xFF2F80ED);
 
   // ---------- Light theme ----------
-  static const Color lightBg = Color(0xFFF8F9FA); // Warm clean off-white
+  static const Color lightBg = Color(0xFFF6F7F3);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightCard = Color(0xFFFFFFFF);
-  static const Color lightTextPrimary = Color(0xFF111827);
-  static const Color lightTextSecondary = Color(0xFF8E8E93);
-  static const Color lightDivider = Color(0xFFEEEEF0);
-  static const Color lightBorder = Color(0xFFEAEBED);
+  static const Color lightTextPrimary = Color(0xFF1D302C);
+  static const Color lightTextSecondary = Color(0xFF6C7974);
+  static const Color lightDivider = Color(0xFFE7ECE6);
+  static const Color lightBorder = Color(0xFFE3E9E2);
 
   // ---------- Dark theme ----------
-  static const Color darkBg = Color(0xFF090A0C);
-  static const Color darkSurface = Color(0xFF121316);
-  static const Color darkCard = Color(0xFF1B1C22);
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFF9E9EA7);
-  static const Color darkDivider = Color(0xFF262730);
-  static const Color darkBorder = Color(0xFF2A2B35);
+  static const Color darkBg = Color(0xFF101715);
+  static const Color darkSurface = Color(0xFF18221F);
+  static const Color darkCard = Color(0xFF1C2823);
+  static const Color darkTextPrimary = Color(0xFFEDF3EE);
+  static const Color darkTextSecondary = Color(0xFFA4B2AA);
+  static const Color darkDivider = Color(0xFF2C3932);
+  static const Color darkBorder = Color(0xFF304038);
 
   // ---------- Gradients ----------
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: <Color>[Color(0xFFFF5B4D), Color(0xFFFF7A6E)],
+    colors: <Color>[Color(0xFF227A67), Color(0xFF36977C)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient darkCardGradient = LinearGradient(
-    colors: <Color>[Color(0xFF16161B), Color(0xFF0D0D10)],
+    colors: <Color>[Color(0xFF233C32), Color(0xFF152720)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -79,13 +79,13 @@ class AppColors {
   );
 
   static const LinearGradient cardGradient = LinearGradient(
-    colors: <Color>[Color(0xFF16161B), Color(0xFF0F0F12)],
+    colors: <Color>[Color(0xFF213E34), Color(0xFF152A26)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient onboardingGradient = LinearGradient(
-    colors: <Color>[Color(0xFFFF5B4D), Color(0xFFF59E0B)],
+    colors: <Color>[Color(0xFF227A67), Color(0xFFBDEBD8)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

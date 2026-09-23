@@ -8,6 +8,27 @@ import 'package:flutter/material.dart';
 /// on the client.
 @immutable
 class CategoryModel {
+  static const List<IconData> availableIcons = <IconData>[
+    Icons.home_rounded,
+    Icons.coffee_rounded,
+    Icons.shopping_cart_rounded,
+    Icons.shopping_bag_rounded,
+    Icons.directions_car_rounded,
+    Icons.movie_rounded,
+    Icons.payments_rounded,
+    Icons.restaurant_rounded,
+    Icons.flight_rounded,
+    Icons.favorite_rounded,
+    Icons.fitness_center_rounded,
+    Icons.school_rounded,
+    Icons.pets_rounded,
+    Icons.work_rounded,
+    Icons.card_giftcard_rounded,
+    Icons.savings_rounded,
+    Icons.category_rounded,
+    Icons.receipt_long_rounded,
+  ];
+
   const CategoryModel({
     required this.id,
     required this.name,
@@ -53,10 +74,9 @@ class CategoryModel {
     return CategoryModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      icon: IconData(
-        json['iconCode'] as int,
-        fontFamily: json['iconFontFamily'] as String?,
-        fontPackage: json['iconFontPackage'] as String?,
+      icon: availableIcons.firstWhere(
+        (IconData icon) => icon.codePoint == json['iconCode'],
+        orElse: () => Icons.category_rounded,
       ),
       color: Color(json['color'] as int),
       isIncome: json['isIncome'] as bool? ?? false,

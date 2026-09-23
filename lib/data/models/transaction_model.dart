@@ -74,7 +74,9 @@ class TransactionModel {
       userId: json['userId'] as String? ?? '',
       title: json['title'] as String,
       amount: (json['amount'] as num).toDouble(),
-      date: (json['date'] as Timestamp).toDate(),
+      date: json['date'] is Timestamp
+          ? (json['date'] as Timestamp).toDate()
+          : DateTime.parse(json['date'] as String),
       category:
           CategoryModel.fromJson(Map<String, dynamic>.from(json['category'])),
       type: TransactionType.values.byName(json['type'] as String),

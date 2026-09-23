@@ -1,184 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../../../data/models/budget_model.dart';
 
-/// Full-color category budget card from the reference Picky screenshot:
-/// - Saturated category background (Blue, Coral, Emerald, Amber, Violet)
-/// - Left squircle with category icon
-/// - Category name + optional "MAXED" badge
-/// - Spending share + limit share subtitle
-/// - High-contrast bold figures ("$380" and "of $380")
 class BudgetCategoryCard extends StatelessWidget {
   const BudgetCategoryCard({
     required this.budget,
     required this.totalSpent,
     this.onTap,
+    this.onDelete,
     super.key,
   });
 
   final BudgetModel budget;
   final double totalSpent;
   final VoidCallback? onTap;
-
-  Color _cardColor() {
-    final String name = budget.category.name.toLowerCase();
-    if (name.contains('housing') || budget.category.id == 'c1') {
-      return AppColors.catHousing;
-    }
-    if (name.contains('food') || budget.category.id == 'c2') {
-      return AppColors.catFood;
-    }
-    if (name.contains('grocer') || budget.category.id == 'c3') {
-      return AppColors.catGroceries;
-    }
-    if (name.contains('shopping') || budget.category.id == 'c4') {
-      return AppColors.catShopping;
-    }
-    if (name.contains('transport') || budget.category.id == 'c5') {
-      return AppColors.catTransport;
-    }
-    return budget.category.color;
-  }
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = _cardColor();
-    final double spendPercent = totalSpent > 0
-        ? ((budget.spent / totalSpent) * 100).roundToDouble()
-        : 0.0;
-    final double limitPercent = budget.limit > 0
-        ? ((budget.spent / budget.limit) * 100).roundToDouble()
-        : 0.0;
-    final bool isMaxed = limitPercent >= 100.0;
-
-    final String spentFormatted =
-        '\$${budget.spent.toStringAsFixed(0)}';
-    final String limitFormatted =
-        'of \$${budget.limit.toStringAsFixed(0)}';
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: bgColor.withValues(alpha: 0.32),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: <Widget>[
-            // Translucent rounded square icon container
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.22),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Center(
-                child: Icon(
-                  budget.category.icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-            ),
-            const SizedBox(width: 14),
-
-            // Middle Column: Title + Badge + Subtitle
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+    final theme = Theme.of(context);
+    final dark = theme.brightness == Brightness.dark;
+    final color = budget.isOver ? AppColors.danger : budget.category.color;
+    final status = budget.isOver
+        ? '${Formatters.currency(budget.spent - budget.limit)} over limit'
+        : '${Formatters.currency(budget.remaining)} left';
+    return Material(
+      color: dark ? AppColors.darkCard : AppColors.lightCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: dark ? AppColors.darkBorder : AppColors.lightBorder),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Flexible(
-                        child: Text(
-                          budget.category.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ),
-                      if (isMaxed) ...<Widget>[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.26),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'MAXED',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${spendPercent.toInt()}% of spend · ${limitPercent.toInt()}% of limit',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: budget.category.color.withValues(alpha: dark ? .18 : .10),
+                      borderRadius: BorderRadius.circular(16),
                     ),
+                    child: Icon(budget.category.icon, color: budget.category.color, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(child: Text(budget.category.name, style: theme.textTheme.titleMedium)),
+                  PopupMenuButton<String>(
+                    tooltip: '${budget.category.name} options',
+                    onSelected: (value) => value == 'edit' ? onTap?.call() : onDelete?.call(),
+                    itemBuilder: (_) => const <PopupMenuEntry<String>>[
+                      PopupMenuItem(value: 'edit', child: Text('Edit budget')),
+                      PopupMenuItem(value: 'delete', child: Text('Remove budget')),
+                    ],
+                    icon: const Icon(Icons.more_horiz_rounded),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 12),
-
-            // Right Column: Spending and Limit
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  spentFormatted,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.4,
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: <Widget>[
+                  Text(Formatters.currency(budget.spent), style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                  Text('of ${Formatters.currency(budget.limit)}', style: theme.textTheme.bodySmall),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Semantics(
+                label: '${budget.category.name} budget',
+                value: '${(budget.progress * 100).round()} percent used, $status',
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: budget.progress.clamp(0, 1)),
+                  duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 650),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, value, __) => LinearProgressIndicator(
+                    value: value,
+                    minHeight: 6,
+                    borderRadius: BorderRadius.circular(4),
+                    color: color,
+                    backgroundColor: color.withValues(alpha: .12),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  limitFormatted,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 10),
+              Text(status, style: theme.textTheme.bodySmall?.copyWith(color: budget.isOver ? AppColors.danger : null)),
+            ],
+          ),
         ),
       ),
     );
