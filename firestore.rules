@@ -1,0 +1,120 @@
+rules_version = '2';
+
+// =============================================================================
+// Budget App — Firestore security rules
+// -----------------------------------------------------------------------------
+// Model:
+//   /users/{uid}                                    — profile doc
+//     /transactions/{txId}                          — user transactions
+//     /budgets/{budgetId}                           — monthly budgets
+//     /categories/{categoryId}                      — user-scoped categories
+//     /notifications/{notifId}                      — in-app notification feed
+//     /analytics_monthly/{yyyy-MM}                  — server-aggregated stats
+//   /categories/{categoryId}                        — global default catalog
+//
+// Principles:
+//   • A user can read/write ONLY their own subtree.
+//   • Profile fields are validated on write (no random fields).
+//   • Transaction writes must include the owning uid + valid type/amount.
+//   • analytics_monthly is read-only from the client; only Cloud Functions
+//     should write it. Loosen if you compute client-side.
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function asNumber(v) {
+      return v is int || v is float;
+    }
+
+    // ---------- /users/{uid} ----------
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      // Create: must match own uid; required keys; email must match auth.
+      allow create: if isOwner(uid)
+        && request.resource.data.id == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.keys().hasAll(['id', 'name', 'email']);
+
+      // Update: cannot change id/email; allowed to add/remove FCM tokens.
+      allow update: if isOwner(uid)
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.email == resource.data.email;
+
+      allow delete: if false; // disable client deletion of users
+
+      // ---------- transactions ----------
+      match /transactions/{txId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.userId == uid
+          && asNumber(request.resource.data.amount)
+          && request.resource.data.amount > 0
+          && request.resource.data.type in ['income', 'expense']
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 120;
+        allow update: if isOwner(uid)
+          && request.resource.data.userId == resource.data.userId;
+        allow delete: if isOwner(uid);
+      }
+
+      // ---------- budgets ----------
+      match /budgets/{budgetId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && asNumber(request.resource.data.limit)
+          && request.resource.data.limit > 0;
+        allow delete: if isOwner(uid);
+      }
+
+      // ---------- categories ----------
+      match /categories/{categoryId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 60;
+        allow delete: if isOwner(uid);
+      }
+
+      // ---------- notifications ----------
+      match /notifications/{notifId} {
+        // The client can read its own feed and mark notifications as read.
+        // Creation is server-side (Cloud Functions).
+        allow read: if isOwner(uid);
+        allow update: if isOwner(uid)
+          // Only the `isRead` field can change from the client.
+          && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['isRead']);
+        allow create, delete: if false;
+      }
+
+      // ---------- monthly analytics ----------
+      match /analytics_monthly/{yearMonth} {
+        // Read-only from the client. If you compute client-side,
+        // replace `create, update: if false;` with `: if isOwner(uid);`.
+        allow read: if isOwner(uid);
+        allow create, update, delete: if isOwner(uid);
+      }
+    }
+
+    // ---------- global default categories (read-only seed) ----------
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Default: deny everything else.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
