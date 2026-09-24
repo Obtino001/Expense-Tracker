@@ -63,19 +63,17 @@ final localBudgetsProvider = StateNotifierProvider<LocalBudgetNotifier, List<Bud
 final transactionsProvider = StreamProvider<List<TransactionModel>>((ref) async* {
   final repo = ref.watch(transactionRepositoryProvider);
   if (repo != null) { yield* repo.watchAll(); return; }
-  ref.watch(localTransactionsProvider);
   final store = ref.read(localTransactionsProvider.notifier);
   await store.ready;
-  yield ref.read(localTransactionsProvider);
+  yield store.state;
 });
 
 final categoriesProvider = StreamProvider<List<CategoryModel>>((ref) async* {
   final repo = ref.watch(transactionRepositoryProvider);
   if (repo != null) { yield* repo.watchCategories(); return; }
-  ref.watch(localCategoriesProvider);
   final store = ref.read(localCategoriesProvider.notifier);
   await store.ready;
-  yield ref.read(localCategoriesProvider);
+  yield store.state;
 });
 
 final budgetsProvider = StreamProvider<List<BudgetModel>>((ref) async* {
@@ -90,11 +88,11 @@ final budgetsProvider = StreamProvider<List<BudgetModel>>((ref) async* {
     return BudgetModel(id: b.id, userId: b.userId, category: category, limit: b.limit, spent: spent, period: b.period);
   }).toList();
   if (repo != null) { yield* repo.watchBudgets().map(derive); return; }
-  ref.watch(localBudgetsProvider);
   final store = ref.read(localBudgetsProvider.notifier);
   await store.ready;
-  yield derive(ref.read(localBudgetsProvider));
+  yield derive(store.state);
 });
+
 
 class BudgetActions {
   BudgetActions(this.ref);

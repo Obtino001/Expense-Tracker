@@ -18,6 +18,7 @@ import '../../features/transactions/presentation/screens/add_transaction_screen.
 import '../../features/transactions/presentation/screens/transactions_screen.dart';
 import '../../shared/providers/auth_provider.dart';
 import '../../shared/widgets/root_shell.dart';
+import '../../firebase_options.dart';
 import '../services/analytics_service.dart';
 import '../animations/page_transitions.dart';
 import 'route_names.dart';
@@ -27,9 +28,14 @@ class AppRouterConfig {
   final GoRouter config;
 }
 
+/// Whether Firebase is running with placeholder keys (demo / offline mode).
+bool get _isDemoMode =>
+    DefaultFirebaseOptions.currentPlatform.apiKey.startsWith('REPLACE_ME');
+
 /// Auth-aware GoRouter.
 ///
 /// Redirect rules:
+/// - Demo mode (placeholder keys) → skip auth, go straight to home
 /// - While auth state is loading → splash
 /// - Signed out + on a protected route → login
 /// - Signed in + on an auth route → home
@@ -44,8 +50,11 @@ final Provider<AppRouterConfig> appRouterProvider = Provider<AppRouterConfig>(
       observers: <NavigatorObserver>[
         AnalyticsService.instance.observer,
       ],
-      refreshListenable: _RouterRefreshNotifier(ref),
+      refreshListenable: _isDemoMode ? null : _RouterRefreshNotifier(ref),
       redirect: (BuildContext c, GoRouterState state) {
+        // In demo mode, skip all auth redirects — let every route through.
+        if (_isDemoMode) return null;
+
         final AsyncValue<User?> auth = ref.read(authStateProvider);
         final String loc = state.matchedLocation;
 
