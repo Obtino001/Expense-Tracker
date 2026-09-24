@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
@@ -25,9 +24,7 @@ class InsightsBanner extends StatelessWidget {
         color: dark ? const Color(0xFF281C1A) : AppColors.coralSoft,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: dark
-              ? const Color(0xFF3D2622)
-              : AppColors.coralMuted,
+          color: dark ? const Color(0xFF3D2622) : AppColors.coralMuted,
           width: 1,
         ),
       ),
@@ -55,12 +52,7 @@ class InsightsBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: dark ? Colors.white : const Color(0xFF2A1C18),
-                height: 1.35,
-              ),
+              style: context.tt.labelMedium!.copyWith(color: dark ? Colors.white : const Color(0xFF2A1C18)),
             ),
           ),
         ],

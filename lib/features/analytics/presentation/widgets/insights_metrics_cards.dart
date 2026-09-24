@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
@@ -66,11 +65,7 @@ class InsightsMetricsCards extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       'Top category',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.lightTextSecondary,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
                     ),
                   ],
                 ),
@@ -79,12 +74,7 @@ class InsightsMetricsCards extends StatelessWidget {
                   topCategory,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3,
-                    color: AppColors.coral,
-                  ),
+                  style: context.tt.titleMedium!.copyWith(color: AppColors.coral),
                 ),
               ],
             ),
@@ -135,25 +125,16 @@ class InsightsMetricsCards extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       'Daily avg',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.lightTextSecondary,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Text(
                   '\$${dailyAvg.toStringAsFixed(2)}',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.4,
-                    color: dark
+                  style: context.tt.titleMedium!.copyWith(color: dark
                         ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary,
-                  ),
+                        : AppColors.lightTextPrimary),
                 ),
               ],
             ),

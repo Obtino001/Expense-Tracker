@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -32,8 +33,7 @@ class NotificationsScreen extends ConsumerWidget {
                   itemCount: 5,
                   itemBuilder: (_, __) => const Padding(
                     padding: EdgeInsets.symmetric(vertical: AppSizes.sm),
-                    child: SkeletonBox(
-                        height: 78, radius: AppSizes.radiusLg),
+                    child: SkeletonBox(height: 78, radius: AppSizes.radiusLg),
                   ),
                 ),
                 error: (Object e, _) => Center(child: Text('Error: $e')),
@@ -56,20 +56,20 @@ class NotificationsScreen extends ConsumerWidget {
                       itemBuilder: (BuildContext c, int i) =>
                           AnimationConfiguration.staggeredList(
                         position: i,
-                        duration: const Duration(milliseconds: 350),
+                        duration: Motion.of(context, Motion.slow),
                         child: SlideAnimation(
                           verticalOffset: 24,
                           child: FadeInAnimation(
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: AppSizes.md),
+                              padding:
+                                  const EdgeInsets.only(bottom: AppSizes.md),
                               child: _NotificationCard(item: items[i]),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ).animate().fadeIn();
+                  ).fxEnter(context, step: 0);
                 },
               ),
             ),

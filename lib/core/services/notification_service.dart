@@ -104,14 +104,14 @@ class NotificationService {
       n.hashCode,
       n.title,
       n.body,
-      NotificationDetails(
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           _androidChannelId,
           _androidChannelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(),
       ),
       payload: message.data.toString(),
     );

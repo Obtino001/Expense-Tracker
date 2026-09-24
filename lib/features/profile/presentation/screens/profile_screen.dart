@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,9 +34,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           children: <Widget>[
             Text('Profile', style: context.text.displayMedium)
-                .animate()
-                .fadeIn(duration: 300.ms)
-                .slideY(begin: -0.1, end: 0),
+                .fxEnter(context, step: 0),
             const SizedBox(height: AppSizes.xl),
 
             // Identity card
@@ -46,9 +44,7 @@ class ProfileScreen extends ConsumerWidget {
               data: (UserModel? u) => u == null
                   ? const _ProfileSkeleton()
                   : _ProfileHeader(user: u, balance: totals.balance)
-                      .animate()
-                      .fadeIn(delay: 100.ms)
-                      .slideY(begin: 0.1, end: 0),
+                      .fxEnter(context, step: 2),
             ),
 
             const SizedBox(height: AppSizes.xl),
@@ -83,7 +79,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
               ],
-            ).animate().fadeIn(delay: 200.ms),
+            ).fxEnter(context, step: 4),
 
             const SizedBox(height: AppSizes.xxl),
 
@@ -100,8 +96,7 @@ class ProfileScreen extends ConsumerWidget {
                 ProfileTile(
                   icon: Icons.notifications_none_rounded,
                   title: 'Notifications',
-                  onTap: () =>
-                      context.push(RouteNames.notifications),
+                  onTap: () => context.push(RouteNames.notifications),
                 ),
                 ProfileTile(
                   icon: Icons.category_rounded,
@@ -174,11 +169,7 @@ class _ProfileHeader extends StatelessWidget {
             child: Center(
               child: Text(
                 user.initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: context.tt.headlineLarge?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -189,15 +180,11 @@ class _ProfileHeader extends StatelessWidget {
               children: <Widget>[
                 Text(
                   user.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: context.tt.titleLarge?.copyWith(color: Colors.white),
                 ),
                 Text(
                   user.email,
-                  style: const TextStyle(color: Colors.white70),
+                  style: context.tt.bodySmall?.copyWith(color: Colors.white70),
                 ),
                 const SizedBox(height: AppSizes.sm),
                 Container(
@@ -207,22 +194,17 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius:
-                        BorderRadius.circular(AppSizes.radiusFull),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Icon(Icons.workspace_premium_rounded,
+                      const Icon(Icons.workspace_premium_rounded,
                           color: Colors.white, size: 14),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         'Premium member',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: context.tt.labelSmall?.copyWith(color: Colors.white),
                       ),
                     ],
                   ),
@@ -266,8 +248,8 @@ class _StatBox extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             value,
-            style: context.text.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w800),
+            style:
+                context.text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
         ],
       ),

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 /// Top header on the Home screen matching the reference Picky design:
 /// [Coral Logo + "Picky"] on the left, [Bell Icon + MR Avatar] on the right.
@@ -44,19 +44,16 @@ class HomeHeader extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: AppSizes.sm + 2),
-        Text(
+        Expanded(child: Text(
           'Picky',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.6,
-            color: dark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-          ),
-        ),
-        const Spacer(),
+          style: context.tt.headlineMedium!.copyWith(color:
+                dark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        )),
 
         // Notification Bell Icon Bubble
-        GestureDetector(
+        Pressable(
           onTap: () {
             HapticFeedback.lightImpact();
             context.push(RouteNames.notifications);
@@ -93,7 +90,7 @@ class HomeHeader extends ConsumerWidget {
         const SizedBox(width: AppSizes.sm + 2),
 
         // User Avatar Circle ("MR")
-        GestureDetector(
+        Pressable(
           onTap: () {
             HapticFeedback.lightImpact();
             context.push(RouteNames.settings);
@@ -108,11 +105,7 @@ class HomeHeader extends ConsumerWidget {
             child: Center(
               child: Text(
                 'MR',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF3E2319),
-                ),
+                style: context.tt.labelMedium!.copyWith(color: const Color(0xFF3E2319)),
               ),
             ),
           ),

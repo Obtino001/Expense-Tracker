@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../data/models/budget_model.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 class BudgetCategoryCard extends StatelessWidget {
   const BudgetCategoryCard({
@@ -33,7 +35,8 @@ class BudgetCategoryCard extends StatelessWidget {
         side: BorderSide(color: dark ? AppColors.darkBorder : AppColors.lightBorder),
       ),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
+      child: Pressable(
+        mergeSemantics: false,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -78,8 +81,8 @@ class BudgetCategoryCard extends StatelessWidget {
                 value: '${(budget.progress * 100).round()} percent used, $status',
                 child: TweenAnimationBuilder<double>(
                   tween: Tween<double>(begin: 0, end: budget.progress.clamp(0, 1)),
-                  duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 650),
-                  curve: Curves.easeOutCubic,
+                  duration: Motion.of(context, Motion.slow),
+                  curve: Motion.out,
                   builder: (_, value, __) => LinearProgressIndicator(
                     value: value,
                     minHeight: 6,

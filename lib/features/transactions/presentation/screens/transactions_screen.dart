@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -39,25 +40,21 @@ class TransactionsScreen extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 child: FilterChips(
                   current: filter,
-                  onSelected: (TxFilter f) => ref
-                      .read(transactionFilterProvider.notifier)
-                      .state = f,
+                  onSelected: (TxFilter f) =>
+                      ref.read(transactionFilterProvider.notifier).state = f,
                 ),
               ),
             ),
             Expanded(
               child: txAsync.when(
                 loading: () => ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.lg),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                   itemCount: 8,
                   itemBuilder: (_, __) => const SkeletonTransactionTile(),
                 ),
-                error: (Object e, _) =>
-                    Center(child: Text('Error: $e')),
+                error: (Object e, _) => Center(child: Text('Error: $e')),
                 data: (List<TransactionModel> all) {
-                  final List<TransactionModel> txs =
-                      _applyFilter(all, filter);
+                  final List<TransactionModel> txs = _applyFilter(all, filter);
                   if (txs.isEmpty) {
                     return Center(
                       child: Text(
@@ -87,28 +84,26 @@ class TransactionsScreen extends ConsumerWidget {
                         final List<TransactionModel> list = grouped[key]!;
                         return AnimationConfiguration.staggeredList(
                           position: i,
-                          duration: const Duration(milliseconds: 400),
+                          duration: Motion.of(context, Motion.slow),
                           child: SlideAnimation(
                             verticalOffset: 24,
                             child: FadeInAnimation(
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: AppSizes.lg),
+                                padding:
+                                    const EdgeInsets.only(bottom: AppSizes.lg),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: AppSizes.sm),
                                       child: Text(
                                         key,
-                                        style: context.text.titleMedium
-                                            ?.copyWith(
+                                        style:
+                                            context.text.titleMedium?.copyWith(
                                           color: context.isDark
                                               ? AppColors.darkTextSecondary
-                                              : AppColors
-                                                  .lightTextSecondary,
+                                              : AppColors.lightTextSecondary,
                                         ),
                                       ),
                                     ),
@@ -123,8 +118,7 @@ class TransactionsScreen extends ConsumerWidget {
                                       child: Column(
                                         children: list
                                             .map((TransactionModel t) =>
-                                                TransactionTile(
-                                                    transaction: t))
+                                                TransactionTile(transaction: t))
                                             .toList(),
                                       ),
                                     ),
@@ -133,7 +127,7 @@ class TransactionsScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
-                        ).animate().fadeIn();
+                        ).fxEnter(context, step: 0);
                       },
                     ),
                   );
@@ -146,8 +140,7 @@ class TransactionsScreen extends ConsumerWidget {
     );
   }
 
-  List<TransactionModel> _applyFilter(
-      List<TransactionModel> txs, TxFilter f) {
+  List<TransactionModel> _applyFilter(List<TransactionModel> txs, TxFilter f) {
     switch (f) {
       case TxFilter.all:
         return txs;

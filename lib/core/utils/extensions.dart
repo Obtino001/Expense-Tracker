@@ -5,6 +5,7 @@ extension BuildContextX on BuildContext {
   ThemeData get theme => Theme.of(this);
   ColorScheme get colors => theme.colorScheme;
   TextTheme get text => theme.textTheme;
+  TextTheme get tt => theme.textTheme;
   bool get isDark => theme.brightness == Brightness.dark;
   Size get screenSize => MediaQuery.sizeOf(this);
   EdgeInsets get padding => MediaQuery.paddingOf(this);

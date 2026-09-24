@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../../core/animations/animation_constants.dart';
+import '../../core/animations/motion.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/extensions.dart';
+import 'pressable.dart';
 
 class BottomNavItem {
   const BottomNavItem({
@@ -62,15 +64,16 @@ class AppBottomNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List<Widget>.generate(items.length, (int i) {
               final bool selected = i == currentIndex;
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
+              return Pressable(
+                scale: .97,
+                borderRadius: BorderRadius.circular(16),
                 onTap: () {
-                  HapticFeedback.selectionClick();
+                  selectionTick();
                   onTap(i);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOutCubic,
+                  duration: Motion.of(context, Motion.fast),
+                  curve: Motion.out,
                   width: selected ? 48 : 42,
                   height: selected ? 48 : 42,
                   decoration: BoxDecoration(

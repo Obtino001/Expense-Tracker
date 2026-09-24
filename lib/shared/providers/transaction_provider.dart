@@ -66,7 +66,7 @@ final transactionsProvider = StreamProvider<List<TransactionModel>>((ref) async*
   ref.watch(localTransactionsProvider);
   final store = ref.read(localTransactionsProvider.notifier);
   await store.ready;
-  yield store.state;
+  yield ref.read(localTransactionsProvider);
 });
 
 final categoriesProvider = StreamProvider<List<CategoryModel>>((ref) async* {
@@ -75,7 +75,7 @@ final categoriesProvider = StreamProvider<List<CategoryModel>>((ref) async* {
   ref.watch(localCategoriesProvider);
   final store = ref.read(localCategoriesProvider.notifier);
   await store.ready;
-  yield store.state;
+  yield ref.read(localCategoriesProvider);
 });
 
 final budgetsProvider = StreamProvider<List<BudgetModel>>((ref) async* {
@@ -93,7 +93,7 @@ final budgetsProvider = StreamProvider<List<BudgetModel>>((ref) async* {
   ref.watch(localBudgetsProvider);
   final store = ref.read(localBudgetsProvider.notifier);
   await store.ready;
-  yield derive(store.state);
+  yield derive(ref.read(localBudgetsProvider));
 });
 
 class BudgetActions {

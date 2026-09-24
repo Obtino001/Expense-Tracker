@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../../../../core/animations/animation_constants.dart';
+import '../../../../core/animations/motion.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -30,14 +32,14 @@ class FilterChips extends StatelessWidget {
         final bool selected = f == current;
         return Padding(
           padding: const EdgeInsets.only(right: AppSizes.sm),
-          child: GestureDetector(
+          child: Pressable(
             onTap: () {
-              HapticFeedback.selectionClick();
+              selectionTick();
               onSelected(f);
             },
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
+              duration: Motion.of(context, Motion.fast),
+              curve: Motion.out,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSizes.lg,
                 vertical: AppSizes.sm,
@@ -53,10 +55,8 @@ class FilterChips extends StatelessWidget {
               ),
               child: Text(
                 _labels[f]!,
-                style: TextStyle(
-                  color: selected ? Colors.white : null,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: context.tt.labelLarge?.copyWith(
+                  color: selected ? Colors.white : null),
               ),
             ),
           ),

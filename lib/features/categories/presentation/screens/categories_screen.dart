@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -9,6 +10,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../data/models/category_model.dart';
 import '../../../../shared/providers/transaction_provider.dart';
 import '../../../../shared/widgets/primary_app_bar.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 class CategoriesScreen extends ConsumerStatefulWidget {
   const CategoriesScreen({super.key});
@@ -22,8 +24,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<CategoryModel>> async =
-        ref.watch(categoriesProvider);
+    final AsyncValue<List<CategoryModel>> async = ref.watch(categoriesProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -41,11 +42,9 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
               child: Container(
                 padding: const EdgeInsets.all(AppSizes.xs),
                 decoration: BoxDecoration(
-                  color: context.isDark
-                      ? AppColors.darkCard
-                      : AppColors.lightCard,
-                  borderRadius:
-                      BorderRadius.circular(AppSizes.radiusFull),
+                  color:
+                      context.isDark ? AppColors.darkCard : AppColors.lightCard,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                 ),
                 child: Row(
                   children: <Widget>[
@@ -64,60 +63,59 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
               ),
             ),
             Expanded(
-              child: async.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (Object e, _) => Center(child: Text('Error: $e')),
-                data: (List<CategoryModel> all) {
-                  final List<CategoryModel> filtered = all
-                      .where((CategoryModel c) =>
-                          c.isIncome == _showIncome)
-                      .toList();
-                  return AnimationLimiter(
-                    child: GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSizes.lg,
-                        0,
-                        AppSizes.lg,
-                        AppSizes.huge,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: AppSizes.md,
-                        crossAxisSpacing: AppSizes.md,
-                        childAspectRatio: 0.95,
-                      ),
-                      itemCount: filtered.length + 1,
-                      itemBuilder: (BuildContext c, int i) {
-                        if (i == filtered.length) {
-                          return AnimationConfiguration.staggeredGrid(
-                            position: i,
-                            columnCount: 3,
-                            duration: const Duration(milliseconds: 400),
-                            child: ScaleAnimation(
-                              child: FadeInAnimation(
-                                child: _AddCategoryTile(onTap: () {}),
-                              ),
-                            ),
-                          );
-                        }
-                        return AnimationConfiguration.staggeredGrid(
-                          position: i,
-                          columnCount: 3,
-                          duration: const Duration(milliseconds: 400),
-                          child: ScaleAnimation(
-                            child: FadeInAnimation(
-                              child: _CategoryTile(
-                                  category: filtered[i]),
-                            ),
+              child: async
+                  .when(
+                    loading: () => const Center(child: LoadingDots()),
+                    error: (Object e, _) => Center(child: Text('Error: $e')),
+                    data: (List<CategoryModel> all) {
+                      final List<CategoryModel> filtered = all
+                          .where((CategoryModel c) => c.isIncome == _showIncome)
+                          .toList();
+                      return AnimationLimiter(
+                        child: GridView.builder(
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSizes.lg,
+                            0,
+                            AppSizes.lg,
+                            AppSizes.huge,
                           ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ).animate().fadeIn(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: AppSizes.md,
+                            crossAxisSpacing: AppSizes.md,
+                            childAspectRatio: 0.95,
+                          ),
+                          itemCount: filtered.length + 1,
+                          itemBuilder: (BuildContext c, int i) {
+                            if (i == filtered.length) {
+                              return AnimationConfiguration.staggeredGrid(
+                                position: i,
+                                columnCount: 3,
+                                duration: Motion.of(context, Motion.slow),
+                                child: ScaleAnimation(
+                                  child: FadeInAnimation(
+                                    child: _AddCategoryTile(onTap: () {}),
+                                  ),
+                                ),
+                              );
+                            }
+                            return AnimationConfiguration.staggeredGrid(
+                              position: i,
+                              columnCount: 3,
+                              duration: Motion.of(context, Motion.slow),
+                              child: ScaleAnimation(
+                                child: FadeInAnimation(
+                                  child: _CategoryTile(category: filtered[i]),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  )
+                  .fxEnter(context, step: 0),
             ),
           ],
         ),
@@ -140,23 +138,20 @@ class _SegTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
+      child: Pressable(
+        onTap: () { selectionTick(); onTap(); },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+          duration: Motion.of(context, Motion.fast),
           padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
           decoration: BoxDecoration(
             gradient: selected ? AppColors.primaryGradient : null,
-            borderRadius:
-                BorderRadius.circular(AppSizes.radiusFull),
+            borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
           child: Center(
             child: Text(
               label,
-              style: TextStyle(
-                color: selected ? Colors.white : null,
-                fontWeight: FontWeight.w600,
-              ),
+              style: context.tt.labelLarge?.copyWith(
+                color: selected ? Colors.white : null),
             ),
           ),
         ),
@@ -186,8 +181,7 @@ class _CategoryTile extends StatelessWidget {
               color: category.color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
-            child:
-                Icon(category.icon, color: category.color, size: 26),
+            child: Icon(category.icon, color: category.color, size: 26),
           ),
           const SizedBox(height: AppSizes.sm),
           Padding(
@@ -197,8 +191,8 @@ class _CategoryTile extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: context.text.bodySmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  context.text.bodySmall?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -213,20 +207,17 @@ class _AddCategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: DottedBorderBox(
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
-            SizedBox(height: AppSizes.xs),
+            const Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
+            const SizedBox(height: AppSizes.xs),
             Text(
               'Add',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: context.tt.labelLarge?.copyWith(color: AppColors.primary),
             ),
           ],
         ),

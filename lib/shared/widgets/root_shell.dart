@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_names.dart';
+import '../../core/animations/animation_constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import 'bottom_nav_bar.dart';
@@ -13,10 +14,36 @@ import 'bottom_nav_bar.dart';
 /// 3. Budgets
 /// 4. Transactions (Clock / History)
 /// 5. Profile
-class RootShell extends ConsumerWidget {
+class RootShell extends ConsumerStatefulWidget {
   const RootShell({required this.child, super.key});
 
   final Widget child;
+
+  @override
+  ConsumerState<RootShell> createState() => _RootShellState();
+}
+
+class _RootShellState extends ConsumerState<RootShell>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fade = AnimationController(
+    vsync: this,
+    duration: Motion.base,
+    value: 1,
+  );
+
+  @override
+  void didUpdateWidget(RootShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.child != widget.child && !Motion.reduced(context)) {
+      _fade.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _fade.dispose();
+    super.dispose();
+  }
 
   static const List<BottomNavItem> _items = <BottomNavItem>[
     BottomNavItem(
@@ -55,13 +82,26 @@ class RootShell extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final int index = ref.watch(bottomTabIndexProvider);
     ref.watch(postSignInBootstrapProvider);
 
     return Scaffold(
       extendBody: true,
-      body: child,
+      body: Motion.reduced(context)
+          ? widget.child
+          : AnimatedBuilder(
+              animation: _fade,
+              child: widget.child,
+              builder: (context, child) => Opacity(
+                opacity: Motion.out.transform(_fade.value),
+                child: Transform.translate(
+                  offset:
+                      Offset(0, 8 * (1 - Motion.out.transform(_fade.value))),
+                  child: child,
+                ),
+              ),
+            ),
       bottomNavigationBar: AppBottomNav(
         currentIndex: index.clamp(0, _items.length - 1),
         items: _items,

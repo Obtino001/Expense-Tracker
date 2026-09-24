@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 /// Square quick-action chip used in the row beneath the balance card.
 class QuickAction extends StatelessWidget {
@@ -23,7 +24,7 @@ class QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool dark = context.isDark;
-    return GestureDetector(
+    return Pressable(
       onTap: () {
         HapticFeedback.lightImpact();
         onTap();

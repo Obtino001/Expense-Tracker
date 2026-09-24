@@ -1,12 +1,14 @@
+import 'package:budget_app/core/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/animations/motion.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 /// Deep black hero Balance Card matching the reference Picky design:
 /// - "Main balance ˇ" dropdown + sparkle icon
@@ -48,8 +50,10 @@ class BalanceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // Top row: [Main balance ˇ] pill + [✦] sparkle icon
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: 12,
+            runSpacing: 8,
             children: <Widget>[
               // Main balance selector pill
               Container(
@@ -68,14 +72,12 @@ class BalanceCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(
+                    Flexible(child: Text(
                       'Main balance',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                      style: context.tt.labelMedium!.copyWith(color: Colors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    )),
                     const SizedBox(width: 4),
                     const Icon(
                       Icons.keyboard_arrow_down_rounded,
@@ -113,42 +115,33 @@ class BalanceCard extends StatelessWidget {
           // "Total balance" label
           Text(
             'Total balance',
-            style: GoogleFonts.plusJakartaSans(
-              color: AppColors.lightTextSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
           ),
           const SizedBox(height: 6),
 
           // Big financial figure "$4,820.50"
-          Row(
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: <Widget>[
-              Text(
+              AnimatedNumber(
                 mainPart,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontSize: 38,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1.0,
-                ),
+                style: context.tt.displayMedium!.copyWith(color: Colors.white),
               ),
               Text(
                 decimalPart,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: context.tt.headlineMedium!.copyWith(color: Colors.white.withValues(alpha: 0.9)),
               ),
             ],
-          ),
+          )),
           const SizedBox(height: 8),
 
           // Trend indicator: "↑ 2.4% this month"
-          Row(
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
             children: <Widget>[
               const Icon(
                 Icons.arrow_upward_rounded,
@@ -158,19 +151,17 @@ class BalanceCard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '2.4% this month',
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white.withValues(alpha: 0.65),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: Colors.white.withValues(alpha: 0.65)),
               ),
             ],
           ),
           const SizedBox(height: 24),
 
           // Action buttons: [Add (+)], [Send (↑)], [Top up (↓)], [More (:::)]
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: 20,
+            runSpacing: 12,
             children: <Widget>[
               _ActionButton(
                 icon: Icons.add_rounded,
@@ -229,9 +220,8 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -257,11 +247,7 @@ class _ActionButton extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: Colors.white),
           ),
         ],
       ),

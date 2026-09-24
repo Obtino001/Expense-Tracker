@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/pressable.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/formatters.dart';
@@ -57,7 +57,8 @@ class BudgetScreen extends ConsumerWidget {
               (double acc, BudgetModel b) => acc + b.limit,
             );
             final double computedLimit = totalLimit > 0 ? totalLimit : 2000.0;
-            final double totalSpent = totals.expense > 0 ? totals.expense : 1240.0;
+            final double totalSpent =
+                totals.expense > 0 ? totals.expense : 1240.0;
             final double leftToSpend =
                 (computedLimit - totalSpent).clamp(0.0, computedLimit);
 
@@ -68,10 +69,8 @@ class BudgetScreen extends ConsumerWidget {
             final String leftCents =
                 leftParts.length > 1 ? '.${leftParts[1]}' : '.00';
 
-            final String spentDollars =
-                '\$${totalSpent.toStringAsFixed(0)}';
-            final String limitDollars =
-                '\$${computedLimit.toStringAsFixed(0)}';
+            final String spentDollars = '\$${totalSpent.toStringAsFixed(0)}';
+            final String limitDollars = '\$${computedLimit.toStringAsFixed(0)}';
 
             return ListView(
               physics: const BouncingScrollPhysics(),
@@ -83,14 +82,9 @@ class BudgetScreen extends ConsumerWidget {
                   children: <Widget>[
                     Text(
                       'Budget',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.8,
-                        color: dark
+                      style: context.tt.displaySmall!.copyWith(color: dark
                             ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
+                            : AppColors.lightTextPrimary),
                     ),
                     Row(
                       children: <Widget>[
@@ -125,13 +119,9 @@ class BudgetScreen extends ConsumerWidget {
                             children: <Widget>[
                               Text(
                                 'October',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: dark
+                                style: context.tt.labelMedium!.copyWith(color: dark
                                       ? AppColors.darkTextPrimary
-                                      : AppColors.lightTextPrimary,
-                                ),
+                                      : AppColors.lightTextPrimary),
                               ),
                               const SizedBox(width: 4),
                               Icon(
@@ -147,7 +137,7 @@ class BudgetScreen extends ConsumerWidget {
                         const SizedBox(width: 10),
 
                         // Sun/Moon theme toggle circle
-                        GestureDetector(
+                        Pressable(
                           onTap: () {
                             HapticFeedback.lightImpact();
                             ref.read(themeModeProvider.notifier).toggle();
@@ -183,19 +173,14 @@ class BudgetScreen extends ConsumerWidget {
                       ],
                     ),
                   ],
-                ).animate().fadeIn(duration: 250.ms),
+                ).fxEnter(context, step: 0),
                 const SizedBox(height: 24),
 
                 // "LEFT TO SPEND" label
                 Text(
                   'L E F T   T O   S P E N D',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                    color: AppColors.lightTextSecondary,
-                  ),
-                ).animate().fadeIn(delay: 50.ms, duration: 250.ms),
+                  style: context.tt.labelSmall!.copyWith(color: AppColors.lightTextSecondary),
+                ).fxEnter(context, step: 1),
                 const SizedBox(height: 6),
 
                 // Amount row: Large "$760.00" on left, "$1,240 of $2,000 spent" on right
@@ -211,24 +196,15 @@ class BudgetScreen extends ConsumerWidget {
                       children: <Widget>[
                         Text(
                           leftDollars,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 42,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -1.2,
-                            color: dark
+                          style: context.tt.displayMedium!.copyWith(color: dark
                                 ? AppColors.darkTextPrimary
-                                : AppColors.lightTextPrimary,
-                          ),
+                                : AppColors.lightTextPrimary),
                         ),
                         Text(
                           leftCents,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            color: dark
+                          style: context.tt.headlineMedium!.copyWith(color: dark
                                 ? AppColors.darkTextPrimary
-                                : AppColors.lightTextPrimary,
-                          ),
+                                : AppColors.lightTextPrimary),
                         ),
                       ],
                     ),
@@ -240,28 +216,19 @@ class BudgetScreen extends ConsumerWidget {
                       children: <Widget>[
                         Text(
                           spentDollars,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.4,
-                            color: dark
+                          style: context.tt.titleMedium!.copyWith(color: dark
                                 ? AppColors.darkTextPrimary
-                                : AppColors.lightTextPrimary,
-                          ),
+                                : AppColors.lightTextPrimary),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           'of $limitDollars spent',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.lightTextSecondary,
-                          ),
+                          style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
                         ),
                       ],
                     ),
                   ],
-                ).animate().fadeIn(delay: 100.ms, duration: 350.ms),
+                ).fxEnter(context, step: 2),
                 const SizedBox(height: 18),
 
                 // Segmented Multi-Color Progress Bar
@@ -269,7 +236,7 @@ class BudgetScreen extends ConsumerWidget {
                   budgets: budgets,
                   totalBudget: computedLimit,
                   totalSpent: totalSpent,
-                ).animate().fadeIn(delay: 150.ms, duration: 350.ms),
+                ).fxEnter(context, step: 3),
                 const SizedBox(height: 28),
 
                 // "Where it went" Header
@@ -278,25 +245,16 @@ class BudgetScreen extends ConsumerWidget {
                   children: <Widget>[
                     Text(
                       'Where it went',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.4,
-                        color: dark
+                      style: context.tt.titleMedium!.copyWith(color: dark
                             ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
+                            : AppColors.lightTextPrimary),
                     ),
                     Text(
                       '${budgets.length} categories',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.lightTextSecondary,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
                     ),
                   ],
-                ).animate().fadeIn(delay: 180.ms, duration: 250.ms),
+                ).fxEnter(context, step: 4),
                 const SizedBox(height: 14),
 
                 // Colored Category Cards
@@ -308,13 +266,7 @@ class BudgetScreen extends ConsumerWidget {
                       onTap: () {
                         HapticFeedback.selectionClick();
                       },
-                    )
-                        .animate()
-                        .fadeIn(
-                          delay: Duration(milliseconds: 200 + i * 40),
-                          duration: 300.ms,
-                        )
-                        .slideY(begin: 0.05, end: 0);
+                    ).fxEnter(context, step: i.clamp(0, 10));
                   }),
                 ),
               ],

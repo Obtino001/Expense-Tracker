@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -52,8 +53,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _next() {
     if (_page < _pages.length - 1) {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOutCubic,
+        duration: Motion.of(context, Motion.slow),
+        curve: Motion.emphasized,
       );
     } else {
       context.go(RouteNames.login);
@@ -81,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
+                      duration: Motion.of(context, Motion.fast),
                       opacity: _page == _pages.length - 1 ? 0 : 1,
                       child: TextButton(
                         onPressed: _skip,
@@ -119,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       : AppColors.lightDivider,
                   dotHeight: 8,
                   dotWidth: 8,
-                  expansionFactor: 3,
+                  expansionFactor: 3.5,
                   spacing: 6,
                 ),
               ),

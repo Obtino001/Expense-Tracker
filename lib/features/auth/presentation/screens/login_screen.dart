@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,9 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: <Widget>[
                 const SizedBox(height: AppSizes.huge),
                 Text('Welcome back', style: context.text.displayMedium)
-                    .animate()
-                    .fadeIn()
-                    .slideY(begin: 0.1, end: 0),
+                    .fxEnter(context, step: 0),
                 const SizedBox(height: AppSizes.xs),
                 Text(
                   'Sign in to continue',
@@ -76,17 +74,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ? AppColors.darkTextSecondary
                         : AppColors.lightTextSecondary,
                   ),
-                ).animate().fadeIn(delay: 100.ms),
+                ).fxEnter(context, step: 2),
                 const SizedBox(height: AppSizes.huge),
-
                 CustomTextField(
                   hint: 'Email',
                   controller: _email,
                   icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
-                ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1, end: 0),
+                ).fxEnter(context, step: 3),
                 const SizedBox(height: AppSizes.md),
-
                 CustomTextField(
                   hint: 'Password',
                   controller: _password,
@@ -96,11 +92,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     icon: Icon(_obscure
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined),
-                    onPressed: () =>
-                        setState(() => _obscure = !_obscure),
+                    onPressed: () => setState(() => _obscure = !_obscure),
                   ),
-                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
-
+                ).fxEnter(context, step: 4),
                 if (_error != null) ...<Widget>[
                   const SizedBox(height: AppSizes.md),
                   Text(
@@ -110,13 +104,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                 ],
-
                 const SizedBox(height: AppSizes.xl),
                 GradientButton(
-                  label: _loading ? 'Signing in…' : 'Sign in',
+                  label: 'Sign in',
+                  loading: _loading,
                   onPressed: _loading ? null : _signIn,
-                ).animate().fadeIn(delay: 300.ms),
-
+                ).fxEnter(context, step: 6),
                 const SizedBox(height: AppSizes.lg),
                 TextButton(
                   onPressed: () async {
@@ -124,7 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       await ref
                           .read(authServiceProvider)
                           .sendPasswordReset(_email.text);
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Reset email sent'),
@@ -134,10 +127,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                   child: const Text('Forgot password?'),
                 ),
-
                 const SizedBox(height: AppSizes.huge),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
                   children: <Widget>[
                     Text('New here?', style: context.text.bodyMedium),
                     TextButton(

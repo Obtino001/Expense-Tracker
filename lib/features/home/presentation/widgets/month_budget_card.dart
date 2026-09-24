@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 /// Month Budget Card on Home screen matching the screenshot:
 /// - [October budget] in Coral + [On track] in green pill badge
@@ -30,7 +30,7 @@ class MonthBudgetCard extends StatelessWidget {
     final double progress = limit > 0 ? (spent / limit).clamp(0.0, 1.0) : 0.0;
     final bool onTrack = progress <= 0.85;
 
-    return GestureDetector(
+    return Pressable(
       onTap: () => context.go(RouteNames.budgets),
       child: Container(
         width: double.infinity,
@@ -54,16 +54,14 @@ class MonthBudgetCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // Header row: "October budget" + "On track"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: 8,
+              runSpacing: 8,
               children: <Widget>[
                 Text(
                   '$monthName budget',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.coral,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: AppColors.coral),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -82,13 +80,8 @@ class MonthBudgetCard extends StatelessWidget {
                   ),
                   child: Text(
                     onTrack ? 'On track' : 'Over limit',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: onTrack
-                          ? const Color(0xFF16A34A)
-                          : AppColors.coral,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: context.tt.labelMedium!.copyWith(color:
+                          onTrack ? const Color(0xFF16A34A) : AppColors.coral),
                   ),
                 ),
               ],
@@ -96,44 +89,29 @@ class MonthBudgetCard extends StatelessWidget {
             const SizedBox(height: 14),
 
             // Amounts row: "$1,240.00 of $2,000" and "$760 left"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
+            Wrap(
+              spacing: 12,
+              runSpacing: 4,
               children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  spacing: 4,
                   children: <Widget>[
                     Text(
                       Formatters.currency(spent),
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.coral,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
+                      style: context.tt.titleMedium!.copyWith(color: AppColors.coral),
                     ),
-                    const SizedBox(width: 4),
                     Text(
                       'of ${Formatters.currency(limit).split('.').first}',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.lightTextSecondary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: context.tt.bodyMedium!.copyWith(color: AppColors.lightTextSecondary),
                     ),
                   ],
                 ),
                 Text(
                   '${Formatters.currency(remaining).split('.').first} left',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: dark
+                  style: context.tt.labelMedium!.copyWith(color: dark
                         ? AppColors.darkTextSecondary
-                        : AppColors.lightTextSecondary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        : AppColors.lightTextSecondary),
                 ),
               ],
             ),

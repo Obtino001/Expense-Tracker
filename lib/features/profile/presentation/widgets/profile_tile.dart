@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 class ProfileTile extends StatelessWidget {
   const ProfileTile({
@@ -25,7 +26,7 @@ class ProfileTile extends StatelessWidget {
     final Color tint = destructive ? AppColors.danger : AppColors.primary;
     return Material(
       color: Colors.transparent,
-      child: InkWell(
+      child: Pressable(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/extensions.dart';
+import 'pressable.dart';
 
 /// Tiny section header used above lists ("Recent transactions" + "See all").
 class SectionHeader extends StatelessWidget {
@@ -26,7 +27,7 @@ class SectionHeader extends StatelessWidget {
           style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         if (actionLabel != null)
-          GestureDetector(
+          Pressable(
             onTap: onAction,
             child: Text(
               actionLabel!,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -26,7 +26,8 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,26 +50,15 @@ class OnboardingPage extends StatelessWidget {
                 ],
               ),
               child: Icon(data.icon, size: 96, color: Colors.white),
-            )
-                .animate()
-                .scale(
-                  begin: const Offset(0.6, 0.6),
-                  end: const Offset(1, 1),
-                  curve: Curves.elasticOut,
-                  duration: 900.ms,
-                )
-                .fadeIn(duration: 400.ms),
+            ).fxPop(context, from: .85,
+                key: ValueKey('${data.title}_illustration')).fxFloat(context),
           ),
           const SizedBox(height: AppSizes.huge),
           Text(
             data.title,
             style: context.text.displayMedium,
-          ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(
-                begin: 0.2,
-                end: 0,
-                curve: Curves.easeOutCubic,
-                duration: 500.ms,
-              ),
+          ).fxEnter(context, step: 3, rise: 10,
+              key: ValueKey('${data.title}_title')),
           const SizedBox(height: AppSizes.md),
           Text(
             data.subtitle,
@@ -78,13 +68,10 @@ class OnboardingPage extends StatelessWidget {
                   : AppColors.lightTextSecondary,
               height: 1.5,
             ),
-          ).animate().fadeIn(delay: 350.ms, duration: 500.ms).slideY(
-                begin: 0.2,
-                end: 0,
-                curve: Curves.easeOutCubic,
-                duration: 500.ms,
-              ),
+          ).fxEnter(context, step: 5, rise: 0,
+              key: ValueKey('${data.title}_body')),
         ],
+      ),
       ),
     );
   }

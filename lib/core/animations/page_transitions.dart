@@ -3,59 +3,36 @@ import 'package:go_router/go_router.dart';
 
 import 'animation_constants.dart';
 
-/// Smooth page transition builders for go_router.
-/// We pass the [GoRouterState] so each page gets a unique [LocalKey].
+CustomTransitionPage<void> fadeThroughPage(Widget child, GoRouterState state) =>
+    _motionPage(child, state);
 
-CustomTransitionPage<void> fadeThroughPage(Widget child, GoRouterState state) {
+CustomTransitionPage<void> slideUpPage(Widget child, GoRouterState state) =>
+    _motionPage(child, state);
+
+CustomTransitionPage<void> _motionPage(Widget child, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
-    transitionDuration: AppAnimations.normal,
-    reverseTransitionDuration: AppAnimations.fast,
+    transitionDuration: Motion.slow,
+    reverseTransitionDuration: Motion.base,
     child: child,
-    transitionsBuilder: (
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondary,
-      Widget child,
-    ) {
-      // Fade + subtle scale — a la Material 3 fadeThrough.
-      final CurvedAnimation curved = CurvedAnimation(
-        parent: animation,
-        curve: AppAnimations.emphasizedDecelerate,
-      );
+    transitionsBuilder: (context, animation, secondary, child) {
+      if (Motion.reduced(context)) return child;
+      final incoming = CurvedAnimation(
+          parent: animation,
+          curve: Motion.emphasized,
+          reverseCurve: Curves.easeIn);
+      final outgoing = CurvedAnimation(
+          parent: secondary, curve: Motion.out, reverseCurve: Curves.easeIn);
       return FadeTransition(
-        opacity: curved,
-        child: ScaleTransition(
-          scale: Tween<double>(begin: 0.98, end: 1).animate(curved),
-          child: child,
+        opacity: outgoing.drive(Tween<double>(begin: 1, end: .92)),
+        child: FadeTransition(
+          opacity: incoming,
+          child: SlideTransition(
+            position: incoming.drive(
+                Tween<Offset>(begin: const Offset(0, .025), end: Offset.zero)),
+            child: child,
+          ),
         ),
-      );
-    },
-  );
-}
-
-CustomTransitionPage<void> slideUpPage(Widget child, GoRouterState state) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    transitionDuration: AppAnimations.normal,
-    reverseTransitionDuration: AppAnimations.fast,
-    child: child,
-    transitionsBuilder: (
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondary,
-      Widget child,
-    ) {
-      final CurvedAnimation curved = CurvedAnimation(
-        parent: animation,
-        curve: AppAnimations.emphasizedDecelerate,
-      );
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.08),
-          end: Offset.zero,
-        ).animate(curved),
-        child: FadeTransition(opacity: curved, child: child),
       );
     },
   );

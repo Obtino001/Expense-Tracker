@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -67,9 +67,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               children: <Widget>[
                 const SizedBox(height: AppSizes.huge),
                 Text('Create account', style: context.text.displayMedium)
-                    .animate()
-                    .fadeIn()
-                    .slideY(begin: 0.1, end: 0),
+                    .fxEnter(context, step: 0),
                 const SizedBox(height: AppSizes.xs),
                 Text(
                   'Start tracking smarter today',
@@ -78,29 +76,27 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ? AppColors.darkTextSecondary
                         : AppColors.lightTextSecondary,
                   ),
-                ).animate().fadeIn(delay: 100.ms),
+                ).fxEnter(context, step: 2),
                 const SizedBox(height: AppSizes.huge),
-
                 CustomTextField(
                   hint: 'Full name',
                   controller: _name,
                   icon: Icons.person_outline_rounded,
-                ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1, end: 0),
+                ).fxEnter(context, step: 3),
                 const SizedBox(height: AppSizes.md),
                 CustomTextField(
                   hint: 'Email',
                   controller: _email,
                   icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
-                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
+                ).fxEnter(context, step: 4),
                 const SizedBox(height: AppSizes.md),
                 CustomTextField(
                   hint: 'Password (min. 6 chars)',
                   controller: _password,
                   icon: Icons.lock_outline_rounded,
                   obscure: true,
-                ).animate().fadeIn(delay: 250.ms).slideY(begin: 0.1, end: 0),
-
+                ).fxEnter(context, step: 5),
                 if (_error != null) ...<Widget>[
                   const SizedBox(height: AppSizes.md),
                   Text(
@@ -110,19 +106,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     ),
                   ),
                 ],
-
                 const SizedBox(height: AppSizes.xl),
                 GradientButton(
-                  label: _loading ? 'Creating account…' : 'Create account',
+                  label: 'Create account',
+                  loading: _loading,
                   onPressed: _loading ? null : _signUp,
-                ).animate().fadeIn(delay: 300.ms),
-
+                ).fxEnter(context, step: 6),
                 const SizedBox(height: AppSizes.huge),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
                   children: <Widget>[
-                    Text('Already have one?',
-                        style: context.text.bodyMedium),
+                    Text('Already have one?', style: context.text.bodyMedium),
                     TextButton(
                       onPressed: () => context.go(RouteNames.login),
                       child: const Text('Sign in'),

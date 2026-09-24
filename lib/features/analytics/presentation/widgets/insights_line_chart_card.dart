@@ -1,6 +1,8 @@
+import 'package:budget_app/core/utils/extensions.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/animations/motion.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
@@ -42,16 +44,14 @@ class InsightsLineChartCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // Top Row: "Spent this month" + "↓ 8% vs last" pill
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: 12,
+            runSpacing: 8,
             children: <Widget>[
               Text(
                 'Spent this month',
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.lightTextSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -75,14 +75,12 @@ class InsightsLineChartCard extends StatelessWidget {
                       color: Colors.white,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    Flexible(child: Text(
                       '8% vs last',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                      style: context.tt.labelMedium!.copyWith(color: Colors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    )),
                   ],
                 ),
               ),
@@ -91,29 +89,22 @@ class InsightsLineChartCard extends StatelessWidget {
           const SizedBox(height: 6),
 
           // Large amount "$1,240.00"
-          Row(
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: <Widget>[
-              Text(
+              AnimatedNumber(
                 mainPart,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontSize: 38,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1.0,
-                ),
+                style: context.tt.displayMedium!.copyWith(color: Colors.white),
               ),
               Text(
                 decimalPart,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: context.tt.headlineMedium!.copyWith(color: Colors.white.withValues(alpha: 0.9)),
               ),
             ],
-          ),
+          )),
           const SizedBox(height: 14),
 
           // Smooth white curved line chart
@@ -141,7 +132,8 @@ class InsightsLineChartCard extends StatelessWidget {
                       checkToShowDot: (FlSpot spot, LineChartBarData barData) {
                         return spot.x == 10;
                       },
-                      getDotPainter: (FlSpot spot, double percent, LineChartBarData bar, int index) {
+                      getDotPainter: (FlSpot spot, double percent,
+                          LineChartBarData bar, int index) {
                         return FlDotCirclePainter(
                           radius: 4,
                           color: Colors.white,
@@ -174,6 +166,8 @@ class InsightsLineChartCard extends StatelessWidget {
                   ),
                 ],
               ),
+              duration: Motion.of(context, Motion.slow),
+              curve: Motion.out,
             ),
           ),
         ],

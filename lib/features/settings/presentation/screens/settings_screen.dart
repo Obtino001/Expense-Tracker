@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../shared/providers/auth_provider.dart';
 import '../../../../shared/providers/preferences_provider.dart';
 import '../../../../shared/providers/theme_provider.dart';
 import '../../../../shared/widgets/primary_app_bar.dart';
+import '../../../../shared/widgets/pressable.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -136,9 +138,10 @@ class _ThemeOption extends StatelessWidget {
     final dark = mode == ThemeMode.dark;
     return Semantics(button: true, selected: selected, label: '$label appearance',
       child: Material(color: colors.surface, borderRadius: BorderRadius.circular(20),
-        child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(20),
+        child: Pressable(onTap: onTap, borderRadius: BorderRadius.circular(20),
+          mergeSemantics: false,
           child: AnimatedContainer(duration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero : const Duration(milliseconds: 240),
+              ? Duration.zero : Motion.of(context, Motion.base),
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
               border: Border.all(color: selected ? colors.primary : colors.outlineVariant,
@@ -204,7 +207,9 @@ Future<void> _showTextSize(BuildContext context, WidgetRef ref) => showModalBott
   context: context, showDragHandle: true, useSafeArea: true,
   builder: (context) => Consumer(builder: (context, ref, _) {
     final prefs = ref.watch(preferencesProvider);
-    return Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+    return RadioGroup<double>(groupValue: prefs.textScale,
+      onChanged: (value) => ref.read(preferencesProvider.notifier).setTextScale(value!),
+      child: Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Comfortably readable', style: Theme.of(context).textTheme.headlineSmall),
@@ -213,19 +218,23 @@ Future<void> _showTextSize(BuildContext context, WidgetRef ref) => showModalBott
           const SizedBox(height: 16),
           for (final scale in [1.0, 1.15, 1.3])
             RadioListTile<double>(contentPadding: EdgeInsets.zero, value: scale,
-              groupValue: prefs.textScale, title: Text(_scaleLabel(scale)),
-              onChanged: (value) => ref.read(preferencesProvider.notifier).setTextScale(value!)),
+              title: Text(_scaleLabel(scale))),
           const SizedBox(height: 12),
           SizedBox(width: double.infinity, child: FilledButton(
             onPressed: () => Navigator.pop(context), child: const Text('Done'))),
-        ]));
+        ])));
   }));
 
 Future<void> _showCurrency(BuildContext context, WidgetRef ref) => showModalBottomSheet<void>(
   context: context, showDragHandle: true, useSafeArea: true, isScrollControlled: true,
   builder: (context) => Consumer(builder: (context, ref, _) {
     final code = ref.watch(preferencesProvider.select((p) => p.currencyCode));
-    return ConstrainedBox(constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .8),
+    return RadioGroup<String>(groupValue: code,
+      onChanged: (value) async {
+        await ref.read(preferencesProvider.notifier).setCurrency(value!);
+        if (context.mounted) Navigator.pop(context);
+      },
+      child: ConstrainedBox(constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .8),
       child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         children: [
           Text('Currency', style: Theme.of(context).textTheme.headlineSmall),
@@ -236,12 +245,8 @@ Future<void> _showCurrency(BuildContext context, WidgetRef ref) => showModalBott
           const SizedBox(height: 16),
           for (final entry in _currencyNames.entries)
             RadioListTile<String>(contentPadding: EdgeInsets.zero, value: entry.key,
-              groupValue: code, title: Text(entry.value), secondary: Text(entry.key),
-              onChanged: (value) async {
-                await ref.read(preferencesProvider.notifier).setCurrency(value!);
-                if (context.mounted) Navigator.pop(context);
-              }),
-        ]));
+              title: Text(entry.value), secondary: Text(entry.key)),
+        ])));
   }));
 
 Future<void> showPrivacySheet(BuildContext context) => showInformationSheet(context,
@@ -271,7 +276,9 @@ Future<void> confirmSignOut(BuildContext context, WidgetRef ref) async {
     await ref.read(authServiceProvider).signOut();
     if (context.mounted) context.go(RouteNames.login);
   } catch (_) {
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not sign out. Please try again.')));
+    }
   }
 }

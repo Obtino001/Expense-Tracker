@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/pressable.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../shared/providers/transaction_provider.dart';
 import '../widgets/insights_banner.dart';
@@ -41,18 +41,15 @@ class AnalyticsScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
+                Expanded(child: Text(
                   'Insights',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.8,
-                    color: dark
+                  style: context.tt.displaySmall!.copyWith(color: dark
                         ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary,
-                  ),
-                ),
-                GestureDetector(
+                        : AppColors.lightTextPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                Pressable(
                   onTap: () {
                     HapticFeedback.lightImpact();
                   },
@@ -60,20 +57,17 @@ class AnalyticsScreen extends ConsumerWidget {
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: dark
-                          ? AppColors.darkCard
-                          : AppColors.lightSurface,
+                      color: dark ? AppColors.darkCard : AppColors.lightSurface,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: dark
-                            ? AppColors.darkBorder
-                            : AppColors.lightBorder,
+                        color:
+                            dark ? AppColors.darkBorder : AppColors.lightBorder,
                         width: 1,
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: Colors.black
-                              .withValues(alpha: dark ? 0.2 : 0.03),
+                          color:
+                              Colors.black.withValues(alpha: dark ? 0.2 : 0.03),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -91,35 +85,23 @@ class AnalyticsScreen extends ConsumerWidget {
                   ),
                 ),
               ],
-            ).animate().fadeIn(duration: 250.ms),
+            ).fxEnter(context, step: 0),
             const SizedBox(height: 20),
 
             // 2. Top Black Card with Line Chart
-            InsightsLineChartCard(spent: totalSpent)
-                .animate()
-                .fadeIn(delay: 50.ms, duration: 350.ms)
-                .slideY(begin: 0.05, end: 0, curve: Curves.easeOutCubic),
+            InsightsLineChartCard(spent: totalSpent).fxEnter(context, step: 1),
             const SizedBox(height: 16),
 
             // 3. Peach/Coral Insight Banner
-            const InsightsBanner()
-                .animate()
-                .fadeIn(delay: 100.ms, duration: 350.ms)
-                .slideY(begin: 0.04, end: 0),
+            const InsightsBanner().fxEnter(context, step: 2),
             const SizedBox(height: 18),
 
             // 4. "This week" Bar Chart
-            const InsightsBarChart()
-                .animate()
-                .fadeIn(delay: 150.ms, duration: 350.ms)
-                .slideY(begin: 0.04, end: 0),
+            const InsightsBarChart().fxEnter(context, step: 3),
             const SizedBox(height: 18),
 
             // 5. 2-Column Metrics Cards: Top category & Daily avg
-            const InsightsMetricsCards()
-                .animate()
-                .fadeIn(delay: 200.ms, duration: 350.ms)
-                .slideY(begin: 0.04, end: 0),
+            const InsightsMetricsCards().fxEnter(context, step: 4),
           ],
         ),
       ),

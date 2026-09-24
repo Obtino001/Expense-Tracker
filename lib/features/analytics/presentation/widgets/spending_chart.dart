@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/animations/animation_constants.dart';
 import '../../../../core/utils/extensions.dart';
 
 /// Weekly spending bar chart using fl_chart.
@@ -22,8 +23,8 @@ class SpendingChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double maxY = (data.reduce((double a, double b) => a > b ? a : b)) *
-            1.25;
+    final double maxY =
+        (data.reduce((double a, double b) => a > b ? a : b)) * 1.25;
     return AspectRatio(
       aspectRatio: 1.6,
       child: BarChart(
@@ -66,15 +67,12 @@ class SpendingChart extends StatelessWidget {
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) => AppColors.primary,
-              tooltipRoundedRadius: AppSizes.radiusMd,
+              tooltipBorderRadius: BorderRadius.circular(AppSizes.radiusMd),
               getTooltipItem:
                   (BarChartGroupData g, int i, BarChartRodData r, int ri) {
                 return BarTooltipItem(
                   r.toY.toStringAsFixed(0),
-                  const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.white),
                 );
               },
             ),
@@ -93,6 +91,8 @@ class SpendingChart extends StatelessWidget {
             );
           }),
         ),
+        duration: Motion.of(context, Motion.slow),
+        curve: Motion.out,
       ),
     );
   }

@@ -1,8 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 /// Weekly spending bar chart matching the Insights screen screenshot:
 /// - "This week" + [W | M | Y] segmented toggle
@@ -21,18 +23,33 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
   int _selectedPeriod = 0; // 0: W, 1: M, 2: Y
 
   static const List<double> values = <double>[
-    42, 68, 30, 88, 51, 120, 35,
+    42,
+    68,
+    30,
+    88,
+    51,
+    120,
+    35,
   ];
 
   static const List<String> days = <String>[
-    'M', 'T', 'W', 'T', 'F', 'S', 'S',
+    'M',
+    'T',
+    'W',
+    'T',
+    'F',
+    'S',
+    'S',
   ];
 
   @override
   Widget build(BuildContext context) {
     final bool dark = context.isDark;
     const double maxVal = 140.0;
-    const double chartHeight = 140.0;
+    final scale = MediaQuery.textScalerOf(context).scale(1);
+    final chartHeight = 140.0 * scale;
+    final chartWidth = math.max(MediaQuery.sizeOf(context).width - 76,
+        values.length * 40.0 * scale);
 
     return Container(
       width: double.infinity,
@@ -56,24 +73,21 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // Header row: "This week" in Coral + [W M Y] segmented control
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: 12,
+            runSpacing: 8,
             children: <Widget>[
               Text(
                 'This week',
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.coral,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: context.tt.titleMedium!.copyWith(color: AppColors.coral),
               ),
               // [W | M | Y] Pill Toggle
               Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                  color: dark
-                      ? const Color(0xFF22222A)
-                      : const Color(0xFFF1F2F5),
+                  color:
+                      dark ? const Color(0xFF22222A) : const Color(0xFFF1F2F5),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -81,7 +95,7 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
                   children: List<Widget>.generate(3, (int i) {
                     final String label = i == 0 ? 'W' : (i == 1 ? 'M' : 'Y');
                     final bool active = _selectedPeriod == i;
-                    return GestureDetector(
+                    return Pressable(
                       onTap: () {
                         setState(() {
                           _selectedPeriod = i;
@@ -109,16 +123,12 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
                         ),
                         child: Text(
                           label,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight:
-                                active ? FontWeight.w700 : FontWeight.w500,
-                            color: active
+                          style: context.tt.bodySmall!.copyWith(fontWeight:
+                                active ? FontWeight.w700 : FontWeight.w500, color: active
                                 ? (dark
                                     ? Colors.white
                                     : AppColors.lightTextPrimary)
-                                : AppColors.lightTextSecondary,
-                          ),
+                                : AppColors.lightTextSecondary),
                         ),
                       ),
                     );
@@ -130,15 +140,19 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
           const SizedBox(height: 18),
 
           // Bar Chart with Numbers Above and Days Below
-          SizedBox(
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+            width: chartWidth,
             height: chartHeight,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: List<Widget>.generate(values.length, (int i) {
                 final double val = values[i];
-                final bool isPeak = i == 5; // Saturday ($120) highlighted in Coral
-                final double barH = (val / maxVal) * (chartHeight - 42);
+                final bool isPeak =
+                    i == 5; // Saturday ($120) highlighted in Coral
+                final double barH = (val / maxVal) * (chartHeight - 50 * scale);
 
                 final Color barColor = isPeak
                     ? AppColors.coral
@@ -146,9 +160,8 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
                         ? const Color(0xFF2A2B35)
                         : const Color(0xFFECEEF2));
 
-                final Color numColor = isPeak
-                    ? AppColors.coral
-                    : AppColors.lightTextSecondary;
+                final Color numColor =
+                    isPeak ? AppColors.coral : AppColors.lightTextSecondary;
 
                 return Expanded(
                   child: Column(
@@ -157,19 +170,15 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
                       // Number above bar: "$120", "$42", etc.
                       Text(
                         '\$${val.toInt()}',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight:
-                              isPeak ? FontWeight.w800 : FontWeight.w600,
-                          color: numColor,
-                        ),
+                        style: context.tt.labelSmall!.copyWith(fontWeight:
+                              isPeak ? FontWeight.w800 : FontWeight.w600, color: numColor),
                       ),
                       const SizedBox(height: 6),
 
                       // Bar capsule
                       Container(
                         width: 18,
-                        height: barH.clamp(12.0, chartHeight - 42),
+                        height: barH.clamp(12.0, chartHeight - 50 * scale),
                         decoration: BoxDecoration(
                           color: barColor,
                           borderRadius: BorderRadius.circular(9),
@@ -180,21 +189,19 @@ class _InsightsBarChartState extends State<InsightsBarChart> {
                       // Day label: M, T, W, T, F, S, S
                       Text(
                         days[i],
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          fontWeight:
-                              isPeak ? FontWeight.w800 : FontWeight.w600,
-                          color: isPeak
-                              ? (dark ? Colors.white : AppColors.lightTextPrimary)
-                              : AppColors.lightTextSecondary,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(fontWeight:
+                              isPeak ? FontWeight.w800 : FontWeight.w600, color: isPeak
+                              ? (dark
+                                  ? Colors.white
+                                  : AppColors.lightTextPrimary)
+                              : AppColors.lightTextSecondary),
                       ),
                     ],
                   ),
                 );
               }),
             ),
-          ),
+          )),
         ],
       ),
     );

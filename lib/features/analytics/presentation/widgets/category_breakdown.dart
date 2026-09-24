@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/animations/animation_constants.dart';
 
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
@@ -59,6 +60,8 @@ class CategoryBreakdown extends StatelessWidget {
                     );
                   }).toList(),
                 ),
+                duration: Motion.of(context, Motion.hero),
+                curve: Motion.out,
               ),
               Column(
                 children: <Widget>[

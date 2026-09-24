@@ -10,7 +10,7 @@ class AnimatedCounter extends StatelessWidget {
     required this.value,
     this.style,
     this.isCurrency = true,
-    this.duration = AppAnimations.slow,
+    this.duration = Motion.hero,
     super.key,
   });
 
@@ -22,8 +22,8 @@ class AnimatedCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: duration,
-      curve: AppAnimations.emphasizedDecelerate,
+      duration: Motion.of(context, duration),
+      curve: Motion.out,
       tween: Tween<double>(begin: 0, end: value),
       builder: (BuildContext c, double v, _) {
         final String text =

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_sizes.dart';
 import '../../core/utils/extensions.dart';
+import 'pressable.dart';
 
 /// Reusable app bar with optional leading back button and trailing actions.
 class PrimaryAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -58,7 +59,7 @@ class _IconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool dark = context.isDark;
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Container(
         height: 42,

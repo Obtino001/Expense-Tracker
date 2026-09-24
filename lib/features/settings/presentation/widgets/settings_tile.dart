@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/widgets/pressable.dart';
 
 class SettingsTile extends StatelessWidget {
   const SettingsTile({required this.icon, required this.title, this.subtitle,
@@ -17,7 +18,8 @@ class SettingsTile extends StatelessWidget {
     final tint = destructive ? colors.error : colors.primary;
     return Material(
       color: Colors.transparent,
-      child: InkWell(
+      child: Pressable(
+        mergeSemantics: false,
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(

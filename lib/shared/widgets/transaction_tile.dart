@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
 import '../../core/utils/extensions.dart';
+import 'pressable.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/transaction_model.dart';
 
@@ -73,7 +73,7 @@ class TransactionTile extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
+      child: Pressable(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: Padding(
@@ -110,22 +110,14 @@ class TransactionTile extends StatelessWidget {
                       transaction.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: dark
+                      style: context.tt.labelLarge!.copyWith(color: dark
                             ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
+                            : AppColors.lightTextPrimary),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       '${transaction.category.name} · ${_timeString(transaction.date)}',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.lightTextSecondary,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: AppColors.lightTextSecondary),
                     ),
                   ],
                 ),
@@ -135,16 +127,11 @@ class TransactionTile extends StatelessWidget {
               // Amount (-$5.40)
               Text(
                 '${income ? '+' : '-'}${Formatters.currency(transaction.amount)}',
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                  letterSpacing: -0.3,
-                  color: income
+                style: context.tt.labelLarge!.copyWith(color: income
                       ? AppColors.success
                       : (dark
                           ? AppColors.darkTextPrimary
-                          : AppColors.lightTextPrimary),
-                ),
+                          : AppColors.lightTextPrimary)),
               ),
             ],
           ),

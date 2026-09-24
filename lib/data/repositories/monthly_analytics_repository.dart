@@ -72,8 +72,7 @@ class MonthlyAnalyticsRepository {
   /// Persist a freshly-computed aggregation back to Firestore.
   Future<void> upsert(MonthlyAnalytics analytics) {
     return _db
-        .doc(FirestorePaths.userMonthlyAnalytics(uid) +
-            '/${analytics.yearMonth}')
+        .doc('${FirestorePaths.userMonthlyAnalytics(uid)}/${analytics.yearMonth}')
         .set(analytics.toJson(), SetOptions(merge: true));
   }
 }

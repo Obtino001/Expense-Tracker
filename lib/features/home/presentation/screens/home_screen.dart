@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:budget_app/core/animations/motion.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../shared/widgets/pressable.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../data/models/budget_model.dart';
 import '../../../../data/models/transaction_model.dart';
@@ -43,7 +43,8 @@ class HomeScreen extends ConsumerWidget {
     );
 
     final double totalSpent = totals.expense > 0 ? totals.expense : 1240.0;
-    final double currentBalance = totals.balance != 0 ? totals.balance : 4820.50;
+    final double currentBalance =
+        totals.balance != 0 ? totals.balance : 4820.50;
 
     return Scaffold(
       backgroundColor: dark ? AppColors.darkBg : AppColors.lightBg,
@@ -61,17 +62,11 @@ class HomeScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 110),
             children: <Widget>[
               // 1. Picky Header
-              const HomeHeader()
-                  .animate()
-                  .fadeIn(duration: 250.ms)
-                  .slideY(begin: -0.05, end: 0),
+              const HomeHeader().fxEnter(context, step: 0),
               const SizedBox(height: 20),
 
               // 2. Large Black Balance Card
-              BalanceCard(balance: currentBalance)
-                  .animate()
-                  .fadeIn(delay: 50.ms, duration: 350.ms)
-                  .slideY(begin: 0.05, end: 0, curve: Curves.easeOutCubic),
+              BalanceCard(balance: currentBalance).fxEnter(context, step: 1),
               const SizedBox(height: 20),
 
               // 3. Month Budget Card (October budget)
@@ -79,40 +74,30 @@ class HomeScreen extends ConsumerWidget {
                 spent: totalSpent,
                 limit: totalLimit > 0 ? totalLimit : 2000.0,
                 monthName: 'October',
-              )
-                  .animate()
-                  .fadeIn(delay: 100.ms, duration: 350.ms)
-                  .slideY(begin: 0.05, end: 0, curve: Curves.easeOutCubic),
+              ).fxEnter(context, step: 2),
               const SizedBox(height: 28),
 
               // 4. Recent activity section header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 16,
+                runSpacing: 8,
                 children: <Widget>[
                   Text(
                     'Recent activity',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
-                      color: dark
+                    style: context.tt.titleMedium!.copyWith(color: dark
                           ? AppColors.darkTextPrimary
-                          : AppColors.lightTextPrimary,
-                    ),
+                          : AppColors.lightTextPrimary),
                   ),
-                  GestureDetector(
+                  Pressable(
                     onTap: () => context.push(RouteNames.transactions),
                     child: Text(
                       'See all',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.coral,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: AppColors.coral),
                     ),
                   ),
                 ],
-              ).animate().fadeIn(delay: 150.ms, duration: 250.ms),
+              ).fxEnter(context, step: 3),
               const SizedBox(height: 12),
 
               // 5. Transactions List
@@ -137,17 +122,13 @@ class HomeScreen extends ConsumerWidget {
                       alignment: Alignment.center,
                       child: Text(
                         'No transactions yet',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.lightTextSecondary,
-                          fontSize: 14,
-                        ),
+                        style: context.tt.bodyMedium!.copyWith(color: AppColors.lightTextSecondary),
                       ),
                     );
                   }
 
                   // Take the most recent items
-                  final List<TransactionModel> recent =
-                      txs.take(4).toList();
+                  final List<TransactionModel> recent = txs.take(4).toList();
 
                   return Column(
                     children: List<Widget>.generate(recent.length, (int i) {
@@ -156,13 +137,7 @@ class HomeScreen extends ConsumerWidget {
                         onTap: () => context.push(
                           RouteNames.transactions,
                         ),
-                      )
-                          .animate()
-                          .fadeIn(
-                            delay: Duration(milliseconds: 180 + i * 40),
-                            duration: 300.ms,
-                          )
-                          .slideX(begin: 0.04, end: 0);
+                      ).fxEnter(context, step: i.clamp(0, 10));
                     }),
                   );
                 },
