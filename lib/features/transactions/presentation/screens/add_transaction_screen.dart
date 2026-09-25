@@ -16,6 +16,7 @@ import '../../../../shared/providers/preferences_provider.dart';
 import '../../../../shared/providers/transaction_provider.dart';
 import '../../../../shared/widgets/primary_app_bar.dart';
 import '../../../../shared/widgets/pressable.dart';
+import '../../../../shared/widgets/skeleton_loader.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({this.transaction, super.key});
@@ -252,7 +253,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       ]),
                       categories.when(
                         loading: () =>
-                            const LinearProgressIndicator(minHeight: 2),
+                            const SkeletonBox(height: 16),
                         error: (_, __) => Row(children: [
                           const Expanded(
                               child: Text('Could not load categories.')),

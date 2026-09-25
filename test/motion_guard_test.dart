@@ -38,4 +38,12 @@ void main() {
           reason: entry.key.pattern);
     }
   });
+
+  test('no spinners (CircularProgressIndicator) exist in lib', () {
+    for (final file in files) {
+      final source = file.readAsStringSync();
+      expect(source.contains('CircularProgressIndicator'), isFalse,
+          reason: 'Spinner found in ${file.path}');
+    }
+  });
 }

@@ -21,6 +21,8 @@ class LocalListStore<T> extends StateNotifier<List<T>> {
   late final Future<void> ready;
   Future<void> _pending = Future<void>.value();
 
+  List<T> get current => state;
+
   Future<void> _load() async {
     try {
       final prefs = await SharedPreferences.getInstance();

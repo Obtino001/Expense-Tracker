@@ -6,6 +6,8 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/utils/extensions.dart';
 
 /// Shimmer-style skeleton block. Compose multiple for full-screen skeletons.
+typedef ShimmerBox = SkeletonBox;
+
 class SkeletonBox extends StatelessWidget {
   const SkeletonBox({
     this.height = 16,

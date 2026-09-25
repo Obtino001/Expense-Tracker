@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'app_style.dart';
 
 /// A quiet, editorial foundation shared by every surface in Picky.
 class AppTheme {
@@ -74,6 +75,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      extensions: const [AppStyle.standard],
       colorScheme: scheme,
       scaffoldBackgroundColor: bg,
       textTheme: text,
@@ -183,6 +185,27 @@ class AppTheme {
       chipTheme: ChipThemeData(
           labelStyle: _style(13, 18, FontWeight.w600, 0).copyWith(color: ink)),
       tabBarTheme: TabBarThemeData(
+          indicatorAnimation: TabIndicatorAnimation.elastic,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicator: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: border, width: 1),
+            boxShadow: dark
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .04),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .05),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+          ),
           labelStyle: _style(14, 20, FontWeight.w600, -.1),
           unselectedLabelStyle: _style(14, 20, FontWeight.w500, -.1)),
       listTileTheme: ListTileThemeData(

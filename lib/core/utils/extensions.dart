@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_style.dart';
 
 /// Tiny ergonomic helpers used across the app.
 extension BuildContextX on BuildContext {
@@ -7,6 +8,7 @@ extension BuildContextX on BuildContext {
   TextTheme get text => theme.textTheme;
   TextTheme get tt => theme.textTheme;
   bool get isDark => theme.brightness == Brightness.dark;
+  AppStyle get appStyle => theme.extension<AppStyle>() ?? AppStyle.standard;
   Size get screenSize => MediaQuery.sizeOf(this);
   EdgeInsets get padding => MediaQuery.paddingOf(this);
   double get screenWidth => screenSize.width;
